@@ -9,13 +9,19 @@
   ],
   "scripts": {
     "bot:dev": "npm run dev --workspace=bot",
-    "build": "vite build",
+    "scripts": {
+  "dev": "vite",
+  "build": "vite build",  
+  "preview": "vite preview"
+},
     "bot:start": "npm run start --workspace=bot",
     "app:dev": "npm run dev --workspace=mini-app",
     "app:build": "npm run build --workspace=mini-app",
     "dev": "concurrently \"npm run bot:dev\" \"npm run app:dev\""
   },
-  "devDependencies": {
+  "devDependencies":"vite": "^5.x.x"
+
+ {
     "concurrently": "^8.2.2"
   }
 }
