@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "bot:dev": "npm run dev --workspace=bot",
+    "build": "vite build",
     "bot:start": "npm run start --workspace=bot",
     "app:dev": "npm run dev --workspace=mini-app",
     "app:build": "npm run build --workspace=mini-app",
