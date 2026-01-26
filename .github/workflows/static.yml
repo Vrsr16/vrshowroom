@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-         run: cd app && npm ci
+         rrun: cd mini-app && npm install
 run: cd app && npm run build
 path: app/dist
       - name: Deploy to GitHub Pages
