@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VR Showroom
 
 Telegram Bot и Mini App для поиска, заказа и отслеживания товаров/оборудования напрямую с китайских фабрик.
@@ -70,3 +71,8 @@ npm run dev
 ## 📄 Лицензия
 
 MIT
+=======
+# vrshowroom
+# vrshowroom
+
+Telegram Mini App + Bot для прямых заказов товаров и оборудования из Китая
