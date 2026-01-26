@@ -22,8 +22,8 @@ jobs:
       node-version: 20
 
   - name: Install dependencies
-    run: cd mini-app && npm ci  # npm ci вместо npm install — быстрее и надёжнее
-
+    run: run: cd "mini app" && npm ci
+run: cd "mini app" && npm run build
   - name: Build Mini App
     run: cd mini-app && npm run build
 
