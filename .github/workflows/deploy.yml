@@ -33,7 +33,7 @@ run: cd "mini app" && npm run build
   - name: Upload artifact
     uses: actions/upload-pages-artifact@v3
     with:
-      path: mini-app/dist  # ← именно сюда, где лежит собранный dist
+      path:'mini app/dist'
 
   - name: Deploy to GitHub Pages
     id: deployment
