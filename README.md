@@ -75,4 +75,4 @@ MIT
 # vrshowroom
 # vrshowroom
 
-Telegram Mini App + Bot для прямых заказов товаров и оборудования из Китая
+Telegram Mini App + Bot для прямых заказов товаров и оборудования из КитаяTrigger new workflow # добавляем строку в README
