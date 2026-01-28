@@ -1,21 +1,20 @@
 {
-  "name": "vr-showroom-bot",
+  "name": "vr-showroom",
   "version": "1.0.0",
-  "description": "VR Showroom Telegram Bot",
-  "main": "dist/index.js",
-  "type": "module",
+  "description": "VR Showroom - Telegram Bot and Mini App for Chinese factory goods",
+  "private": true,
+  "workspaces": [
+    "bot",
+    "mini-app"
+  ],
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
-  "dependencies": {
-    "telegraf": "^4.15.3",
-    "dotenv": "^16.3.1"
+    "bot:dev": "npm run dev --workspace=bot",
+    "bot:start": "npm run start --workspace=bot",
+    "app:dev": "npm run dev --workspace=mini-app",
+    "app:build": "npm run build --workspace=mini-app",
+    "dev": "concurrently 'npm run bot:dev' 'npm run app:dev'"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "concurrently": "^8.2.2"
   }
 }
