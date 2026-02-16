@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Mini App to GitHub Pages
 
 on:
   push:
@@ -9,32 +9,36 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-    uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
-  - name: Setup Node
-    uses: actions/setup-node@v4
-    with:
-      node-version: 20
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  - name: Install dependencies
-    run: run: cd "mini app" && npm ci
-run: cd "mini app" && npm run build
-  - name: Build Mini App
-    run: cd mini-app && npm run build
+      - name: Install dependencies
+        run: npm ci
 
-  - name: Configure Pages
-    uses: actions/configure-pages@v5
+      - name: Build Mini App
+        run: cd mini-app && npm run build
 
-  - name: Upload artifact
-    uses: actions/upload-pages-artifact@v3
-    with:
-      path:'mini app/dist'
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
 
-  - name: Deploy to GitHub Pages
-    id: deployment
-    uses: actions/deploy-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: mini-app/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
