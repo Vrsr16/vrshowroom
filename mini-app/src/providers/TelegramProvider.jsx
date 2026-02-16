@@ -1,14 +1,4 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { 
-  SDKProvider, 
-  useInitData, 
-  useLaunchParams,
-  useThemeParams,
-  useMiniApp,
-  useViewport,
-  useHapticFeedback,
-} from '@telegram-apps/sdk-react'
-import { init, miniApp, themeParams, viewport, initData } from '@telegram-apps/sdk'
 
 const TelegramContext = createContext(null)
 
@@ -35,55 +25,58 @@ const MOCK_THEME = {
 }
 
 function TelegramProviderInner({ children }) {
-  const initDataResult = useInitData()
-  const themeParamsResult = useThemeParams()
   const [isTelegramEnv, setIsTelegramEnv] = useState(false)
+  const [tgWebApp, setTgWebApp] = useState(null)
 
   useEffect(() => {
-    const isTg = typeof window !== 'undefined' && window.Telegram?.WebApp?.initData
-    setIsTelegramEnv(!!isTg)
+    const webApp = window.Telegram?.WebApp
+    const isTg = !!webApp?.initData
+    setIsTelegramEnv(isTg)
+    setTgWebApp(webApp)
 
-    if (isTg) {
+    if (isTg && webApp) {
       try {
-        window.Telegram.WebApp.ready()
-        window.Telegram.WebApp.expand()
+        webApp.ready()
+        webApp.expand()
       } catch (e) {
         console.warn('Failed to initialize Telegram WebApp:', e)
       }
     }
   }, [])
 
-  // Get user from SDK or use mock
+  // Get user from Telegram WebApp or use mock
   const user = useMemo(() => {
-    if (initDataResult?.user) {
+    const tgUser = tgWebApp?.initDataUnsafe?.user
+    if (tgUser) {
       return {
-        id: initDataResult.user.id,
-        firstName: initDataResult.user.firstName,
-        lastName: initDataResult.user.lastName || '',
-        username: initDataResult.user.username || '',
-        languageCode: initDataResult.user.languageCode || 'ru',
-        isPremium: initDataResult.user.isPremium || false,
-        photoUrl: initDataResult.user.photoUrl || null,
+        id: tgUser.id,
+        firstName: tgUser.first_name,
+        lastName: tgUser.last_name || '',
+        username: tgUser.username || '',
+        languageCode: tgUser.language_code || 'ru',
+        isPremium: tgUser.is_premium || false,
+        photoUrl: tgUser.photo_url || null,
       }
     }
     return MOCK_USER
-  }, [initDataResult])
+  }, [tgWebApp])
 
-  // Get theme from SDK or use mock
+  // Get theme from Telegram WebApp or use mock
   const theme = useMemo(() => {
-    if (themeParamsResult && isTelegramEnv) {
+    const tp = tgWebApp?.themeParams
+    if (tp && isTelegramEnv) {
       return {
-        bgColor: themeParamsResult.bgColor || MOCK_THEME.bgColor,
-        textColor: themeParamsResult.textColor || MOCK_THEME.textColor,
-        hintColor: themeParamsResult.hintColor || MOCK_THEME.hintColor,
-        linkColor: themeParamsResult.linkColor || MOCK_THEME.linkColor,
-        buttonColor: themeParamsResult.buttonColor || MOCK_THEME.buttonColor,
-        buttonTextColor: themeParamsResult.buttonTextColor || MOCK_THEME.buttonTextColor,
-        secondaryBgColor: themeParamsResult.secondaryBgColor || MOCK_THEME.secondaryBgColor,
+        bgColor: tp.bg_color || MOCK_THEME.bgColor,
+        textColor: tp.text_color || MOCK_THEME.textColor,
+        hintColor: tp.hint_color || MOCK_THEME.hintColor,
+        linkColor: tp.link_color || MOCK_THEME.linkColor,
+        buttonColor: tp.button_color || MOCK_THEME.buttonColor,
+        buttonTextColor: tp.button_text_color || MOCK_THEME.buttonTextColor,
+        secondaryBgColor: tp.secondary_bg_color || MOCK_THEME.secondaryBgColor,
       }
     }
     return MOCK_THEME
-  }, [themeParamsResult, isTelegramEnv])
+  }, [tgWebApp, isTelegramEnv])
 
   // Apply theme to CSS variables
   useEffect(() => {
@@ -165,9 +158,9 @@ function TelegramProviderInner({ children }) {
     theme,
     isTelegramEnv,
     webApp,
-    initData: initDataResult,
-    botUsername: 'vrshowroom_bot', // Replace with your bot username
-  }), [user, theme, isTelegramEnv, webApp, initDataResult])
+    initData: tgWebApp?.initDataUnsafe || null,
+    botUsername: 'vrshowroom_bot',
+  }), [user, theme, isTelegramEnv, webApp, tgWebApp])
 
   return (
     <TelegramContext.Provider value={value}>
@@ -177,45 +170,10 @@ function TelegramProviderInner({ children }) {
 }
 
 export function TelegramProvider({ children }) {
-  const [sdkError, setSdkError] = useState(false)
-
-  // Try to detect if we're in Telegram environment
-  const isTelegramEnv = typeof window !== 'undefined' && !!window.Telegram?.WebApp?.initData
-
-  if (!isTelegramEnv) {
-    // Render without SDK in browser
-    return (
-      <TelegramContext.Provider value={{
-        user: MOCK_USER,
-        theme: MOCK_THEME,
-        isTelegramEnv: false,
-        webApp: {
-          openTelegramLink: (url) => window.open(url, '_blank'),
-          openLink: (url) => window.open(url, '_blank'),
-          sendData: (data) => console.log('[Mock] sendData:', data),
-          close: () => console.log('[Mock] close'),
-          showAlert: (msg) => alert(msg),
-          showConfirm: (msg, cb) => cb?.(confirm(msg)),
-          hapticFeedback: {
-            impactOccurred: () => {},
-            notificationOccurred: () => {},
-            selectionChanged: () => {},
-          },
-        },
-        initData: null,
-        botUsername: 'vrshowroom_bot',
-      }}>
-        {children}
-      </TelegramContext.Provider>
-    )
-  }
-
   return (
-    <SDKProvider acceptCustomStyles>
-      <TelegramProviderInner>
-        {children}
-      </TelegramProviderInner>
-    </SDKProvider>
+    <TelegramProviderInner>
+      {children}
+    </TelegramProviderInner>
   )
 }
 
