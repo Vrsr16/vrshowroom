@@ -29,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: Build Mini App
-        run: cd mini-app && npm run build
+        run: cd mini-app && npm install
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
